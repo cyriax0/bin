@@ -1,0 +1,1 @@
+gnome-screenshot -f /dev/shm/screenshot && i3lock -u -i /dev/shm/screenshot

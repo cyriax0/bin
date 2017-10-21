@@ -1,0 +1,1 @@
+while inotifywait $@;do sleep 0.05s;make;done
