@@ -1,0 +1,5 @@
+#!/bin/sh
+cd /dev/shm
+mplayer -vo jpeg -frames 2 tv://
+rm 00000001.jpg
+mv 00000002.jpg `date -Iseconds`.jpg
