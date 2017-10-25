@@ -1,0 +1,5 @@
+#!/bin/bash
+tmpfile=/dev/shm/tts.wav
+[ "$*" ] && pico2wave -w $tmpfile "$*" || pico2wave -w $tmpfile "`cat`"
+mpv --really-quiet $tmpfile
+rm $tmpfile
