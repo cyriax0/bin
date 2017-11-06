@@ -1,5 +1,5 @@
 # Sometimes I am too lazy to use i3-input
 # You should consider binding i3-input to something
-[ -z $1 ] && echo I need something to do && exit 0
-[ -z $2 ] && i3-msg rename workspace to $1
+[ -z "$1" ] && echo I need something to do && exit 0
+[ -z "$2" ] && i3-msg rename workspace to $1 && exit 0
 i3-msg rename workspace $1 to $2
