@@ -18,7 +18,7 @@ goto(){
     echo Mark: $mark
     echo Workspace: $workspace
     [ "$mark" ] && i3-msg "[con_mark=\"$mark\"] focus"
-    [ "$workspace" ] && i3-msg "workspace \"$workspace\""
+    [ "$workspace" ] && i3-msg "workspace --no-auto-back-and-forth \"$workspace\""
 }
 
 mark(){
@@ -30,13 +30,18 @@ delete_mark(){
     [ "$r" ] && i3-msg unmark "$r" 
 }
 
+sticky(){
+    i3-msg sticky toggle
+}
+
 
 c_list="
 1:goto\n\
 2:mark\n\
 3:delete mark\n\
 4:rename workspace\n\
-5:move workspace to output\
+5:move workspace to output\n\
+6:sticky toggle\
 "
 
 a=$(echo $c_list|dmenu)
@@ -55,5 +60,8 @@ case $a in
         ;;
     *delete*)
         delete_mark
+        ;;
+    *sticky*)
+        sticky
         ;;
 esac
