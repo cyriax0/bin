@@ -27,7 +27,7 @@ mark(){
 
 delete_mark(){
     r=$(i3-msg -t get_marks|sed 's/[^"]*$//;s/.[^"]*"\([^"]*\)"/\1\n/g'|dmenu)
-    [ "$r"] && i3-msg unmark "$r" 
+    [ "$r" ] && i3-msg unmark "$r" 
 }
 
 
