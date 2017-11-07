@@ -1,0 +1,59 @@
+#!/bin/sh
+
+move(){
+    t=$(i3-msg -t get_outputs|sed 's/},{/\n/g'|grep active\":true|cut -d\" -f4|dmenu)
+    [ "$t" ] && i3-msg move workspace to output $t
+}
+
+rename(){
+    i3-input -F "rename workspace to %s"
+}
+
+goto(){
+    a=$(i3-msg -t get_marks|sed 's/[^"]*$//;s/.[^"]*"\([^"]*\)"/\1 [win]\\n/g')
+    b=$(i3-msg -t get_workspaces|sed 's/},{/\n/g'|cut -d\" -f6|sed 's/$/ [wrks]\\n/')
+    r=$(echo $a$b |sed 's/^ *//;/^$/d'|dmenu)
+    mark=$(echo $r|sed '/wrks/d;s/ \[win\]$//')
+    workspace=$(echo $r|sed '/win/d;s/ \[wrks\]$//')
+    echo Mark: $mark
+    echo Workspace: $workspace
+    [ "$mark" ] && i3-msg "[con_mark=\"$mark\"] focus"
+    [ "$workspace" ] && i3-msg "workspace \"$workspace\""
+}
+
+mark(){
+    i3-input -F "mark %s"
+}
+
+delete_mark(){
+    r=$(i3-msg -t get_marks|sed 's/[^"]*$//;s/.[^"]*"\([^"]*\)"/\1\n/g'|dmenu)
+    [ "$r"] && i3-msg unmark "$r" 
+}
+
+
+c_list="
+1:goto\n\
+2:mark\n\
+3:delete mark\n\
+4:rename workspace\n\
+5:move workspace to output\
+"
+
+a=$(echo $c_list|dmenu)
+case $a in
+    *move*)
+        move
+        ;;
+    *rename*)
+        rename
+        ;;
+    *goto*)
+        goto
+        ;;
+    *2:mark*)
+        mark
+        ;;
+    *delete*)
+        delete_mark
+        ;;
+esac
