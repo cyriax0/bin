@@ -1,5 +1,16 @@
 #!/bin/bash
-tmpfile=/dev/shm/tts.wav
-[ "$*" ] && pico2wave -w $tmpfile "$*" || pico2wave -w $tmpfile "`cat`"
-mpv --really-quiet $tmpfile
-rm $tmpfile
+langopt="en-US"
+if [ -z $1 ];then
+    text="`cat`"
+elif [ $1 == "-l" ];then
+    text="${@:3}"
+    langopt="$2"
+else
+    text="$@"
+fi
+
+fifo=/dev/shm/tts_fifo.wav
+[ -p $fifo ] || mkfifo $fifo
+
+mpv --really-quiet $fifo &
+pico2wave -l $langopt -w $fifo "$text"
