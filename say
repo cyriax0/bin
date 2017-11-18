@@ -2,6 +2,9 @@
 langopt="en-US"
 if [ -z $1 ];then
     text="`cat`"
+elif [ $1 == "de" ];then
+    text="${@:2}"
+    langopt="de-DE"
 elif [ $1 == "-l" ];then
     text="${@:3}"
     langopt="$2"
