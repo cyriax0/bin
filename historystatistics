@@ -1,2 +1,2 @@
 #!/bin/sh
-cut -d \  -f 1 $HOME/.bash_history|sort|uniq -c|sort -n|sed s/^\ *//|grep -v ^1
+cut -d \  -f 1 $HOME/.bash_history|sort|uniq -c|sort -n|sed s/^\ *//|grep -v ^1\ 
