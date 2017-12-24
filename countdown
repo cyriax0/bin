@@ -1,0 +1,60 @@
+#!/usr/bin/python3
+import sys,time,re
+
+def usage():
+    print("usage: countdown [time]\nexamples:\n\tcountdown 1m20\n\tcountdown 120s\n\tcountdown 1d8h30")
+    sys.exit(0)
+
+if len(sys.argv) != 2: usage()
+
+# parse argument
+globals().update(re.match('((?P<days>\d+)d)?((?P<hours>\d+)h)?((?P<minutes>\d+)m)?((?P<seconds>\d+)s)?((?P<unknowns>\d+))?',sys.argv[1]).groupdict())
+
+# clean variables
+if days and not hours: hours = unknowns
+elif hours and not minutes: minutes = unknowns
+elif not seconds: seconds = unknowns
+if not days: days = 0
+if not hours: hours = 0
+if not minutes: minutes = 0
+if not seconds: seconds = 0
+
+# calculate waittime
+waittime = int(seconds) + 60 * ( int(minutes) + 60 * ( int(hours) + 24 * int(days)))
+if not waittime: usage()
+
+
+
+try:
+    cancelled = False
+    # countdown
+    for t in range(waittime,0,-1):
+        d,t= divmod(t,86400)
+        h,t= divmod(t,3600)
+        m,t= divmod(t,60)
+        s = t
+        if waittime >= 86400:
+            print("\033[K\r%d %02d:%02d:%02d "%(d,h,m,s),end="")
+        elif waittime >= 3600:
+            print("\033[K\r%02d:%02d:%02d "%(h,m,s),end="")
+        else:
+            print("\033[K\r%02d:%02d "%(m,s),end="")
+        time.sleep(1)
+# on interruption
+except:
+    cancelled = True
+
+# if countdown has ended display zero value
+if not cancelled:
+    if waittime >= 86400:
+        print("\033[K\r0 00:00:00")
+    elif waittime >= 3600:
+        print("\033[K\r00:00:00")
+    else:
+        print("\033[K\r00:00")
+
+# if the countdown has been cancelled don't erase the remaining time (it's useful information) 
+else:
+    print("")
+    sys.exit(1)
+
