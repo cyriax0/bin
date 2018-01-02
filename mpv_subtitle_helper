@@ -5,6 +5,7 @@
 # bind it to buttons in i3
 fifo="$HOME/.mpvfifo"
 [ -p $fifo ] || exit 1
-[ "$1" ] || echo -e "usage:\n$0 pause\n$0 back"
+[ "$1" ] || echo -e "usage:\n$0 pause\n$0 back1\n$0 back3"
 [ "$1" = "pause" ] && echo '{"command":["cycle","pause"]}' > $fifo 
-[ "$1" = "back" ] && echo '{"command":["seek","-5"]}' > $fifo
+[ "$1" = "back3" ] && echo '{"command":["seek","-3"]}' > $fifo
+[ "$1" = "back1" ] && echo '{"command":["seek","-1"]}' > $fifo
