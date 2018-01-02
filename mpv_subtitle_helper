@@ -1,0 +1,10 @@
+#!/bin/bash
+# For keybinds to help me transcribe stuff (for 34c3)
+# make sure the pipe exists
+# mpv --input-file=$HOME/.mpvfifo
+# bind it to buttons in i3
+fifo="$HOME/.mpvfifo"
+[ -p $fifo ] || exit 1
+[ "$1" ] || echo -e "usage:\n$0 pause\n$0 back"
+[ "$1" = "pause" ] && echo '{"command":["cycle","pause"]}' > $fifo 
+[ "$1" = "back" ] && echo '{"command":["seek","-5"]}' > $fifo
