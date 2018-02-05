@@ -1,0 +1,98 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Switch;
+my $maxwait = 150;
+
+sub waitr {
+	my $max = shift;
+	my $ms = rand($max); # ms
+	$ms /= 1000; # ms -> s
+	# Some obscure Voodoo found:
+	select(undef, undef, undef, $ms); # sleeps for $ms seconds
+	# trys to open a not defined file and timeouts after $ms seconds
+};
+
+sub rout {
+	my $i = shift;
+	switch (int(rand(72+1))) {
+		case 0 { print `lpq` }
+		case 1 { print `df` }
+		case 2 { print `ps fcaux` }
+		case 3 { print `lsmod` }
+		case 4 { print `cat /proc/cpuinfo` }
+		case 5 { print `cat /proc/meminfo` }
+		case 6 { print `who` }
+		case 7 { print `last -f /var/run/utmp` }
+		case 9 { print `cat /proc/modules ` }
+		case 10 { print `cat /proc/buddyinfo` }
+		case 11 { print `cat /proc/cgroups` }
+		case 12 { print `cat /proc/cmdline` }
+		case 13 { print `cat /proc/cpuinfo` }
+		case 14 { print `cat /proc/crypto` }
+		case 15 { print `cat /proc/devices` }
+		case 16 { print `cat /proc/diskstats` }
+		case 17 { print `cat /proc/dma` }
+		case 18 { print `cat /proc/execdomains` }
+		case 19 { print `cat /proc/fb` }
+		case 20 { print `cat /proc/filesystems` }
+		case 21 { print `cat /proc/interrupts` }
+		case 22 { print `cat /proc/iomem` }
+		case 23 { print `cat /proc/ioports` }
+		case 24 { print `head -n 1122 /proc/kallsyms` }
+		case 26 { print `cat /proc/keys` }
+		case 27 { print `cat /proc/key-users` }
+		case 31 { print `cat /proc/latency_stats` }
+		case 32 { print `cat /proc/loadavg` }
+		case 33 { print `cat /proc/locks` }
+		case 34 { print `cat /proc/mdstat` }
+		case 35 { print `cat /proc/meminfo` }
+		case 36 { print `cat /proc/misc` }
+		case 37 { print `cat /proc/modules` }
+		case 38 { print `cat /proc/mtrr` }
+		case 39 { print `cat /proc/pagetypeinfo` }
+		case 40 { print `cat /proc/partitions` }
+		case 41 { print `cat /proc/sched_debug` }
+		case 42 { print `cat /proc/schedstat` }
+		case 43 { print `cat /proc/slabinfo` }
+		case 44 { print `cat /proc/stat` }
+		case 45 { print `cat /proc/swaps` }
+		case 46 { print `cat /proc/sysrq-trigger` }
+		case 47 { print `cat /proc/timer_list` }
+		case 48 { print `cat /proc/timer_stats` }
+		case 49 { print `cat /proc/uptime` }
+		case 50 { print `cat /proc/version` }
+		case 51 { print `cat /proc/vmallocinfo` }
+		case 52 { print `cat /proc/vmstat` }
+		case 53 { print `cat /proc/zoneinfo` }
+		case 54 { print `df|od` }
+		case 55 { print `df|od -x` }
+		case 56 { print `df|od -f` }
+		case 57 { print `df|od -a` }
+		case 58 { print `df|od -b` }
+		case 59 { print `lpq|od` }
+		case 60 { print `lpq|od -x` }
+		case 61 { print `date|od` }
+		case 62 { print `date|od -x` }
+		case 63 { print `cat /etc/passwd` }
+		case 64 { print `stat -t /etc/*` }
+		case 65 { print `stat /etc/*` }
+		case 66 { print `/sbin/ifconfig` }
+		case 67 { print `/sbin/lsusb` }
+		case 68 { print `/sbin/lsscsi` }
+		case 69 { print `/sbin/lspcmcia` }
+		case 70 { print `/sbin/lspci` }
+		case 71 { print `/sbin/lsof` }
+		case 72 { print `/sbin/lshal` }
+#		case * { rout; }
+
+	};
+};
+
+
+my $i=0;
+while (1) {
+	rout($i);
+	waitr($maxwait);
+	$i++;
+};
