@@ -1,0 +1,13 @@
+#!/bin/bash
+
+original_brightness=`brightness get`
+
+function reset_brightness {
+    brightness $original_brightness 
+}
+
+trap reset_brightness EXIT
+
+while sleep 0.25; do brightness 10%; sleep 0.25; brightness 100%; done
+
+
