@@ -1,2 +1,6 @@
 #!/bin/sh
-cut -d \  -f 1 $HOME/.bash_history|sort|uniq -c|sort -n|sed s/^\ *//|grep -v ^1\ 
+HISTFILES=""
+for FILE in $HOME/.local/share/fish/fish_history $HOME/.bash_history $HOME/.histfile $HOME/.tcsh_history;do
+    [ -e $FILE ] && HISTFILES="$HISTFILES $FILE"
+done
+cat $HISTFILES|cut -d \  -f 1 |uniq|sort|uniq -c|sort -nr|sed s/^\ *//|grep -v \^1\ |less
