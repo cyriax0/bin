@@ -1,0 +1,12 @@
+#!/bin/bash
+
+original_brightness=`brightness get`
+
+function reset_brightness {
+    brightness $original_brightness 
+}
+
+trap reset_brightness EXIT
+
+brightness $@
+read
