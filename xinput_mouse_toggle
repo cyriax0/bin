@@ -1,0 +1,9 @@
+id=$(xinput|grep Synaptics\ TouchPad|sed 's/^.*id=\([0-9]*\).*$/\1/')
+flag=/dev/shm/.xinput_mouse_flag
+if [ -e $flag ];then
+    xinput disable $id
+    rm $flag
+else
+    xinput enable $id
+    touch $flag
+fi
