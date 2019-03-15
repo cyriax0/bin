@@ -1,0 +1,39 @@
+
+
+a_time=30min
+b_time=5min
+
+
+notify-send -u low -t 3000 Procrastinadoro "You have $a_time"
+countdown $a_time
+notify-send -u critical Procrastinadoro "Done with that"
+echo "Procrastinadoro next step $b_time"
+read
+notify-send -u low -t 3000 Procrastinadoro "You have $b_time"
+countdown $b_time
+notify-send -u critical Procrastinadoro "Done with this"
+echo "Procrastinadoro next step $a_time"
+read
+notify-send -u low -t 3000 Procrastinadoro "You have $a_time"
+countdown $a_time
+notify-send -u critical Procrastinadoro "Done with that"
+echo "Procrastinadoro next step $b_time"
+read
+notify-send -u low -t 3000 Procrastinadoro "You have $b_time"
+countdown $b_time
+notify-send -u critical Procrastinadoro "Done with this"
+echo "Procrastinadoro next step $a_time"
+read
+notify-send -u low -t 3000 Procrastinadoro "You have $a_time"
+countdown $a_time
+notify-send -u critical Procrastinadoro "Done with that"
+echo "Procrastinadoro next step $b_time"
+read
+notify-send -u low -t 3000 Procrastinadoro "You have $b_time"
+countdown $b_time
+notify-send -u critical Procrastinadoro "Done with this"
+echo "Procrastinadoro next step $a_time"
+read
+notify-send -u low -t 3000 Procrastinadoro "You have $a_time"
+countdown $a_time
+notify-send -u critical Procrastinadoro "Done with that"
