@@ -1,2 +1,2 @@
-okular $@ &>/dev/null &
+okular "$@" &>/dev/null &
 # Todo test for *.pdf files and autocorrect me

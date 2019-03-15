@@ -8,7 +8,7 @@ def usage():
 if len(sys.argv) != 2: usage()
 
 # parse argument
-globals().update(re.match('((?P<days>\d+)d)?((?P<hours>\d+)h)?((?P<minutes>\d+)m)?((?P<seconds>\d+)s)?((?P<unknowns>\d+))?',sys.argv[1]).groupdict())
+globals().update(re.match('((?P<days>\d+)d)?((?P<hours>\d+)h)?((?P<minutes>\d+)m(in)?)?((?P<seconds>\d+)s)?((?P<unknowns>\d+))?',sys.argv[1]).groupdict())
 
 # clean variables
 if days and not hours: hours = unknowns
