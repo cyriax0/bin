@@ -1,0 +1,174 @@
+#!/usr/bin/python3
+
+# Single Line Calendar
+
+# Copyright (c) 2019, Jonathan Cyriax Brast
+# 
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+
+# TODO:
+# Less hardcoding
+# Deletion
+# smarter compression
+# Nicer colors
+
+# CONFIGURATION
+datadir="/home/cyriax/.calendar"
+
+
+
+import os, datetime, re, sys
+
+formatstrings = [
+        "%Y-%m-%d",
+        "%y-%m-%d",
+        "%d.%m.",
+        "%d.%m",
+        "%m-%d",
+        "%d.%m.%y",
+        "%d.%m.%Y"
+        ]
+
+today=datetime.datetime.today().replace(hour=0,minute=0,second=0,microsecond=0)
+columns = int(os.popen('stty size', 'r').read().split()[1])
+
+class console:
+    def reset(): return "\033[0m"
+    def rgb(r,g,b): return "\033[38;2;"+str(r)+";"+str(g)+";"+str(b)+"m"
+
+def colorcycle():
+    while True:
+        yield console.rgb(0,128,255)
+        yield console.rgb(255,128,0)
+        yield console.rgb(128,0,255)
+        yield console.rgb(0,255,128)
+        yield console.rgb(128,255,0)
+        yield console.rgb(255,0,128)
+
+def smartcompress(info, space):
+    if len(info) <= space: return info
+    l = list(info)[1:-1]
+    while len(l) > space-2:
+        for c in "eiauo":
+            try:
+                l.remove(c)
+                break
+            except:
+                continue
+        else:
+            break
+    info=info[0]+"".join(l)+info[-1]
+    return ("{: <"+str(space)+"}").format(info[:space])
+
+
+class Date:
+    def __init__(self, fullstr):
+        #name, datestr):
+        match=re.match('(?P<date>[^ ]*) (?P<desc>.*)',fullstr)
+        if match:
+            self.info= match.groupdict()["desc"]
+            self.parsedate(match.groupdict()["date"])
+        else:
+            self.info = ""
+            self.date=None
+    def __repr__(self):
+        return self.date.strftime("%Y-%m-%d")+" "+self.info
+    def save(self):
+        name = "{}/{}".format(datadir,self.__repr__())
+        with open(name, 'a'):pass
+    def delete(self):
+        name = "{}/{}".format(datadir,self.__repr__())
+        try: os.remove(name)
+        except: pass
+    def parsedate(self, datestr):
+        date=None
+        for fmt in formatstrings:
+            try:
+                date=datetime.datetime.strptime(datestr, fmt)
+                break
+            except ValueError:
+                continue
+        else:
+            return None
+        if date.year < 1950:
+            if (date-today.replace(year=date.year)).days < 0:
+                date = date.replace(year=today.year+1)
+            else:
+                date = date.replace(year=today.year)
+        self.date=date
+    def daydiff(self):
+        return (self.date-today).days
+    def future(self):
+        if not self.date: return False
+        return self.daydiff() >= 0
+    def short(self, space=16):
+        daydiff=self.daydiff()
+        if daydiff < 3:
+            date=["v",">",">>","<"][daydiff]
+        elif daydiff < 4:
+            date="+{}".format(daydiff)
+        elif daydiff < 28:
+            date=str(self.date.day)
+        else:
+            date="{}.{}".format(self.date.day,self.date.month)
+        infospace=space-len(date)-2
+        info=smartcompress(self.info,infospace)
+        return "{}|{} ".format(date,info)
+
+def printshort(maxspace=14):
+    s = today.strftime("(%d.%m) ")
+    remainingspace=min(columns,64)-len(s)
+    futures = [ d for d in dates if d.future() ]
+    for d,c in zip(futures,colorcycle()):
+        info = d.short(maxspace)
+        remainingspace-=len(info)
+        if remainingspace < 0: break
+        s += c + info
+    s += console.reset()
+    print(s)
+
+def printlong():
+    s = today.strftime("%y-%m-%d")
+    s += "\n"
+    futures = [ d for d in dates if d.daydiff() >= 0 ]
+    for d,c in zip(futures,colorcycle()):
+        s += "{}{} {}\n".format(c,
+            d.date.strftime("%y-%m-%d"),
+            d.info)
+    s += console.reset() 
+    print(s,end="")
+
+dates = [Date(s) for s in sorted(os.listdir(datadir))]
+    
+
+def delete_old():
+    pasts = [ d for d in dates if not d.future() ]
+    for p in pasts: p.delete()
+
+def add(fullstr):
+    d=Date(fullstr)
+    if d.date:
+        d.save()
+
+if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        printshort()
+    elif sys.argv[1] == "add":
+        add(" ".join(sys.argv[2:]))
+    elif sys.argv[1] == "del":
+        delete_old()
+    elif sys.argv[1] == "long":
+        printlong()
+
+
