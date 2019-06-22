@@ -212,7 +212,9 @@ echo -e "\033[1;35m"
 echo "   Backup Blacklist Generator   "
 echo -e "\033[0m"
 
+echo -n "Loading blacklist... "
 load
+echo done.
 
 PROMPT_COMMAND=_pcmd
 trap save EXIT
