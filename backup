@@ -53,7 +53,7 @@ echo "sync DEST    - uses rsync to sync to a destination (dry run first)"
 echo "load         - loads blacklist (happens automatically)"
 echo "save         - saves blacklist (happens automatically)"
 echo "               (on sync and on exit)"
-echo "cd,ls,exit - usual shell commands"
+echo "cd, ls, exit - usual shell commands"
 }
 
 _human(){
@@ -160,12 +160,12 @@ _pcmd(){
 sync(){
     save
     dest="$*"
-    $rsync --exclude-from=$BLACKLIST --info=STATS -anh $ROOT $1|$tail -2
+    $rsync --exclude-from=$BLACKLIST --info=STATS -anh $ROOT $dest|$tail -2
     echo Destination: $dest
     echo -en "\033[1;31mDoes this look right to you?\033[0m [Ny]> "
     read ans
     if [ "xy" == "x$ans" ];then
-        $rsync --exclude-from=$BLACKLIST --info=STATS -aPh $ROOT $1
+        $rsync --exclude-from=$BLACKLIST --info=STATS -aPh $ROOT $dest
     else
         echo Cancelling...
     fi
