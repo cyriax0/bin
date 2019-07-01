@@ -26,6 +26,8 @@ grep=$(which grep)
 uniq=$(which uniq)
 rsync=$(which rsync)
 tail=$(which tail)
+disksync=$(which sync)
+sleep=$(which sleep)
 
 alias ls="$ls --color=always"
 alias mkdir=$(which mkdir)
@@ -166,6 +168,10 @@ sync(){
     read ans
     if [ "xy" == "x$ans" ];then
         $rsync --exclude-from=$BLACKLIST --info=STATS -aPh $ROOT $dest
+        echo -n 'Commiting disk caches to disks (sync)...'
+        $disksync
+        #sleep 2s
+        echo ' done.'
     else
         echo Cancelling...
     fi
