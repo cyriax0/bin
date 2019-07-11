@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# Dieses Tool ist dafuer da, damit Vifino damit programmiert
-
-while true;do
-echo Mach was richtig!
-read -p "Gib hier ein programm ein> " foo
-done
-
