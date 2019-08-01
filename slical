@@ -25,6 +25,9 @@
 
 # CONFIGURATION
 datadir="/home/cyriax/.calendar"
+use_color=True
+use_today=True
+shortsize=64
 
 
 
@@ -40,21 +43,29 @@ formatstrings = [
         "%d.%m.%Y"
         ]
 
+colors = [
+        (0,128,255),
+        (255,128,0),
+        (128,0,255),
+        (255,0,128),
+        (0,255,128),
+        (128,255,0)]
+
+
+
+
 today=datetime.datetime.today().replace(hour=0,minute=0,second=0,microsecond=0)
 columns = int(os.popen('stty size', 'r').read().split()[1])
 
 class console:
-    def reset(): return "\033[0m"
-    def rgb(r,g,b): return "\033[38;2;"+str(r)+";"+str(g)+";"+str(b)+"m"
+    def reset(): return ("","\033[0m")[use_color]
+    def rgb(r,g,b):
+        return ("","\033[38;2;"+str(r)+";"+str(g)+";"+str(b)+"m")[use_color]
 
 def colorcycle():
     while True:
-        yield console.rgb(0,128,255)
-        yield console.rgb(255,128,0)
-        yield console.rgb(128,0,255)
-        yield console.rgb(0,255,128)
-        yield console.rgb(128,255,0)
-        yield console.rgb(255,0,128)
+        for c in colors:
+            yield console.rgb(*c)
 
 def smartcompress(info, space):
     if len(info) <= space: return info
@@ -71,6 +82,27 @@ def smartcompress(info, space):
     info=info[0]+"".join(l)+info[-1]
     return ("{: <"+str(space)+"}").format(info[:space])
 
+def smartdateinfo(date, size):
+    day = date.strftime("%-d")
+    month = date.strftime("%-m")
+    monthname = date.strftime("%b")
+    if size >= len(day)+len(month)+1:
+        return day+"."+month
+    if (date-today).days < 28 and size >= len(day) + 1:
+        return day+"."
+    if date.month-today.month != 0 and size >= len(monthname):
+        return monthname
+    return ""
+
+
+def equalize_str(*string_list):
+    """takes strings and returns strings
+    with padding on the left, so all strings are equally long
+    usage:
+    s1, s2, s3 = equalize_str(s1,s2,s3)
+    """
+    mlen = max(map(len,string_list))
+    return tuple( s + " "*(mlen-len(s)) for s in string_list)
 
 class Date:
     def __init__(self, fullstr):
@@ -127,11 +159,22 @@ class Date:
         return "{}|{} ".format(date,info)
 
 def printshort(maxspace=14):
-    s = today.strftime("(%d.%m) ")
-    remainingspace=min(columns,64)-len(s)
+    s = today.strftime("(%d.%m) ") if use_today else ""
+    remainingspace=min(columns,shortsize)-len(s)
     futures = [ d for d in dates if d.future() ]
     for d,c in zip(futures,colorcycle()):
-        info = d.short(maxspace)
+        daydiff=d.daydiff()
+        if daydiff < 3:
+            date=["v",">",">>","<"][daydiff]
+        elif daydiff < 4:
+            date="+{}".format(daydiff)
+        elif daydiff < 28:
+            date=str(d.date.day)
+        else:
+            date="{}.{}".format(d.date.day,d.date.month)
+        infospace=maxspace-len(date)-2
+        info=smartcompress(d.info,infospace)
+        info = "{}|{} ".format(date,info)
         remainingspace-=len(info)
         if remainingspace < 0: break
         s += c + info
@@ -149,6 +192,35 @@ def printlong():
     s += console.reset() 
     print(s,end="")
 
+
+def printdouble(eachspace=14):
+    l1 = today.strftime("%a")
+    l2 = today.strftime("%d.")
+    futures = [ d for d in dates if d.future() ]
+    totall = 3
+    for d,c in zip(futures,colorcycle()):
+        info=smartcompress(d.info,eachspace-1)
+        moreinfo = ""
+        if d.daydiff() > 0:
+            moreinfo += str(d.daydiff())+"> "
+        else:
+            moreinfo += "v-v "
+        moreinfo += d.date.strftime("%a ")
+        moreinfo += smartdateinfo(d.date, eachspace-len(moreinfo)-1)
+        info, moreinfo = equalize_str(info, moreinfo)
+        totall += len(info)+1
+        if info[-2:] == "  ": info = " "+info[:-1]
+        if info[-2:] == "  ": info = " "+info[:-1]
+        if totall > shortsize:
+            break
+        l1 += c+"|"+info
+        l2 += c+"|"+moreinfo
+    l1 += console.reset()
+    l2 += console.reset()
+    print(l1)
+    print(l2)
+
+
 dates = [Date(s) for s in sorted(os.listdir(datadir))]
     
 
@@ -163,6 +235,8 @@ def add(fullstr):
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
+        printdouble()
+    elif sys.argv[1] == "single":
         printshort()
     elif sys.argv[1] == "add":
         add(" ".join(sys.argv[2:]))
@@ -170,5 +244,17 @@ if __name__ == "__main__":
         delete_old()
     elif sys.argv[1] == "long":
         printlong()
+    elif sys.argv[1] == "double":
+        printdouble()
+    elif sys.argv[1] == "i3block":
+        use_color=False
+        use_today=False
+        shortsize=45
+        printshort(15)
+        shortsize=12
+        printshort(12)
+    else:
+        sys.exit(1)
+    sys.exit(0)
 
 
