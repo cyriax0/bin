@@ -103,7 +103,7 @@ def plot2d(a,rows=None,cols=columns):
             s+=quarterblocks[t]
     return s
 
-def solidlines(n=4,part=0.3):
+def printgrad(n=4,part=0.3):
     s = ""
     cp=random()
     for x in range(columns):
@@ -124,7 +124,7 @@ def printpride(n=3):
             s+=bg_color(*hexrgb(c))+" "*columns*max(1,int(n/6))
     print(s)
 
-def printcheckerboard(n):
+def printcheckerboard(n=4):
     for _ in range(int(n/2)):
         print(" \u2590\u2588"*int(columns/3))
         print("\u2588\u258c "*int(columns/3))
@@ -136,7 +136,7 @@ def printnoise(n=4):
         s+=quarterblocks[randint(0,15)]
     print(s)
 
-def printgol(n=6, steps=12, p=0.1):
+def printgol(n=6, steps=12, p=0.2):
     f1,f2 = [],[]
     for _ in range(n*2):
         f1.append( [ random() < p for _ in range(columns*2) ])
@@ -233,7 +233,7 @@ def printpwave(n=4,waves=5,amplitude=0.25):
     print(plot2d(array))
 
 
-def printinvfft(n=4,c=3):
+def printinvfft(n=4,c=10):
     my = columns*2+1
     mx = n*2+1
     rs = [ (random()-0.5,random()-0.5,(random()+random()*1j)/5) for _ in range(c) ]
@@ -261,11 +261,13 @@ if __name__ == "__main__":
     if n == 0:
         pass
     elif len(sys.argv) == 1:
-        solidlines(n)
+        modules=[printgrad,printnoise,printnoise2,
+                printgol,printpwave,printinvfft]
+        modules[randint(1,len(modules))-1](6)
     elif sys.argv[1] in ["-h","--h","h","help"]:
         usage()
     elif sys.argv[1] in ["grad","gradient"]:
-        solidlines(n)
+        printgrad()(n)
     elif sys.argv[1] in ["pride","gay"]:
         printpride(n)
     elif sys.argv[1] in ["checker","goal"]:
