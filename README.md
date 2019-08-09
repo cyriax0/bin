@@ -38,12 +38,13 @@ Somewhat usable and somewhat useful:
     Both modes attempts to compresses the entries by deleting vowels before cutting stuff off and color different entries to make telling them apart easier.
 ```
 (09.08) 14|Camp Anrse 21|Camp 27|Camp Abrse 2|CR Pruefung
-```
+
     Single line mode shows the current date and significant parts of the dates of the entries (i.e. only the day of month for everythin in the next weeks and day.month for everything later).
 ```
 Fri|Camp Anreise|  Camp      |Camp Abreise|CeR Pruefung
 09.|5> Wed 14.8 |12> Wed 21.8|18> Tue 27.8|24> Mon 2.9 
 ```
+
     Double line mode Shows the day of the week and the as well as how many days remain.
     Data entry can use different formats eg. `2038-1-19` `19.1.2038` `19-1` `1.19` the later two mapping to the next 19th of January.
     Entries are stored in `~/.calenda` just as the name of an empty file.
