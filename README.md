@@ -55,7 +55,7 @@ Fri|Camp Anreise|  Camp      |Camp Abreise|CeR Pruefung
     It's basically a big colorful bar that can help you to find the beginning of long outputs.
     You can use it before compiling to have a visual barrier between different runs.
     It has different modes and adjustable thickness.
-    [Asciinema Record](https://asciinema.org/a/JYfzTIGxeER7vRQxLlpdJvr0f)
+    [Asciinema Record (somewhat broken)](https://asciinema.org/a/JYfzTIGxeER7vRQxLlpdJvr0f)
 
 * `inotifymake`
     Wait for a file to change, then `make`.
