@@ -19,7 +19,9 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 import os, sys
-from random import random, randint
+from random import random, randint, normalvariate as gaussian
+from math import cos,pi
+from cmath import polar, exp as cexp
 quarterblocks = " \u2598\u259d\u2580\u2596\u258c\u259e\u259b\u2597\u259a\u2590\u259c\u2584\u2599\u259f\u2588"
 
 columns = int(os.popen('/bin/stty size', 'r').read().split()[1])
@@ -38,6 +40,10 @@ parameters:
                 noise
                 noise2
                 gol, game
+                pwave
+                fft10, invfft10
+                fft3, invfft3
+                
 """
     print(s)
 
@@ -74,6 +80,28 @@ def gradientgen(fgs=random(),bgs=random(),part=0.8):
 def zipcolor(s,c):
     return "".join((i for x in zip(c,s) for i in x))
 
+
+def plot2d(a,rows=None,cols=columns):
+    if not rows: rows = int(len(a)/2)
+    s=""
+    for x in range(0,2*rows,2):
+        for y in range(0,2*cols,2):
+            nbh = [a[xa][ya] for xa in range(x,x+3) for ya in range(y,y+3)]
+            avg = sum(nbh)/9
+            inbh = [ [nbh[i] for i in l]
+                    for l in ((0,1,3,4),(1,2,4,5),(3,4,6,7),(4,5,7,8)) ]
+            ival = [ sum(nbs)/4 for nbs in inbh]
+            a1,a2,a3,a4 = ival[0],ival[1],ival[2],ival[3]
+            t1,t2,t3,t4 = a1>avg,a2>avg,a3>avg,a4>avg
+            t = 1*t1 + 2*t2 + 4*t3 + 8*t4
+            c1 = a1*t1 + a2*t2 + a3*t3 + a4*t4
+            if c1: c1 /= 1*t1 + 1*t2 + 1*t3 + 1*t4
+            c2 = a1*(not t1) + a2*(not t2) + a3*(not t3) + a4*(not t4)
+            if c2: c2 /= 1*(not t1) + 1*(not t2) + 1*(not t3) + 1*(not t4)
+            s+=color(*huergb(c1))
+            s+=bg_color(*huergb(c2))
+            s+=quarterblocks[t]
+    return s
 
 def solidlines(n=4,part=0.3):
     s = ""
@@ -191,6 +219,41 @@ def printnoise2(n=4):
             s+=quarterblocks[t]
     print(s)
 
+def printpwave(n=4,waves=5,amplitude=0.25):
+    my = columns*2+1
+    mx = n*2+1
+    offset = random()
+    radius = min(mx/3,my/6/waves)
+    array = [ [ offset+0.5 + amplitude*
+                    cos(1/radius*(
+                        (x**2+(y-my/2)**2)**0.5
+                        +gaussian(0,radius) ))
+                for y in range(my) ]
+              for x in range(mx) ]
+    print(plot2d(array))
+
+
+def printinvfft(n=4,c=3):
+    my = columns*2+1
+    mx = n*2+1
+    rs = [ (random()-0.5,random()-0.5,(random()+random()*1j)/5) for _ in range(c) ]
+    offset = random()
+    array = [[ polar(sum((
+                f*cexp(2j*pi*(u*(x-mx/2)+v*(y-my/2))/(my/16))
+                for u,v,f in rs )))[0]+offset
+                    for y in range(my) ]
+                        for x in range(mx) ]
+    print(plot2d(array))
+
+
+
+
+
+
+
+
+
+
 
  
 if __name__ == "__main__":
@@ -213,6 +276,12 @@ if __name__ == "__main__":
         printnoise2(n)
     elif sys.argv[1] in ["gol","game"]:
         printgol(n,p=0.2)
+    elif sys.argv[1] in ["pwave"]:
+        printpwave(n)
+    elif sys.argv[1] in ["invfft10","fft10"]:
+        printinvfft(n,10)
+    elif sys.argv[1] in ["invfft3","fft3"]:
+        printinvfft(n,10)
     print("\033[0m",end="")
     
 
