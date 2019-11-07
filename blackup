@@ -194,7 +194,7 @@ load(){
     [ -e $BLACKLIST ] || return 0
     IFS=$'\n'
     for l in $($cat $BLACKLIST);do
-        bl $l
+        [ -e $l ] && bl $l
     done
 }
 
