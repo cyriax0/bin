@@ -16,4 +16,6 @@ fifo=/dev/shm/tts_fifo.wav
 [ -p $fifo ] || mkfifo $fifo
 
 mpv --really-quiet $fifo &
+pid=$!
 pico2wave -l $langopt -w $fifo "$text"
+wait $pid
