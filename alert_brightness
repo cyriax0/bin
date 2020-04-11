@@ -7,7 +7,7 @@ function reset_brightness {
 }
 
 trap reset_brightness EXIT
-
-while sleep 0.25; do brightness 10%; sleep 0.25; brightness 100%; done
+sleeptime=0.25
+while sleep $sleeptime; do brightness 10%; sleep $sleeptime; brightness 100%; done
 
 
