@@ -235,7 +235,7 @@ def add(fullstr):
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
-        printdouble()
+        printlong()
     elif sys.argv[1] == "single":
         printshort()
     elif sys.argv[1] == "add":
