@@ -1,0 +1,5 @@
+#!/bin/bash
+# Git lazy commit
+git init
+git add -A
+git commit -m "glc: lazy commit $(date -I)"
