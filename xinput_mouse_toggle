@@ -2,6 +2,9 @@ id=$(xinput|grep Synaptics\ TouchPad|sed 's/^.*id=\([0-9]*\).*$/\1/')
 flag=/dev/shm/.xinput_mouse_flag
 if [ -e $flag ];then
     xinput disable $id
+    xkbset m
+    xmodmap -e "keycode 108 = Pointer_Button1"
+    xmodmap -e "keycode 107 = Pointer_Button3"
     rm $flag
 else
     xinput enable $id
