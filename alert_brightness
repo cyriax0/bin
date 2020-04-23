@@ -6,8 +6,32 @@ function reset_brightness {
     brightness $original_brightness 
 }
 
-trap reset_brightness EXIT
+function randomsleep {
+    rsleeptime=0.$(($RANDOM%10))
+    sleep $rsleeptime
+}
+
+function randomblink {
+    randomsleep
+    brightness 10%
+    randomsleep
+    brightness 100%
+}
+
 sleeptime=0.25
-while sleep $sleeptime; do brightness 10%; sleep $sleeptime; brightness 100%; done
+function blink {
+    sleep $sleeptime
+    brightness 10%
+    sleep $sleeptime
+    brightness 100%
+}
+
+trap reset_brightness EXIT
+if [ -z $1 ];then
+    while true;do blink; done
+else
+    for _ in $(seq $1);do blink;done
+fi
+reset_brightness
 
 
